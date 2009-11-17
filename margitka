@@ -4911,6 +4911,21 @@ proc drawcmittext {id row col} {
     set name [lindex $commitinfo($id) 1]
     set date [lindex $commitinfo($id) 2]
     set date [formatdate $date]
+    # UMS
+    set comment [lindex $commitinfo($id) 5]
+    set topic {}
+    foreach line [split $comment "\n"] {
+        set tline [string trimleft $line]
+        set len_tline [string length $tline]
+        set first [string range $tline 0 0]
+        set last [string range $tline $len_tline-1 $len_tline-1]
+        if {$first == "\x5b"} {
+            if {$last == "\x5d"} {
+                set topic [string range $tline 1 $len_tline-2]
+                break
+            }
+        }
+    }
     set font mainfont
     set nfont mainfont
     set isbold [ishighlighted $id]
@@ -4930,7 +4945,7 @@ proc drawcmittext {id row col} {
     set linedtag($row) [$canv3 create text 3 $y -anchor w -fill $fgcolor \
 			    -text $date -font mainfont -tags text]
     set linedtag($row) [$canv4 create text 3 $y -anchor w -fill $fgcolor \
-			    -text "margitka" -font mainfont -tags text]
+			    -text $topic -font mainfont -tags text]
 
     if {$selectedline == $row} {
 	make_secsel $row
