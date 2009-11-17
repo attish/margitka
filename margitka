@@ -4941,11 +4941,11 @@ proc drawcmittext {id row col} {
 			    -text $headline -font $font -tags text]
     $canv bind $linehtag($row) <Button-3> "rowmenu %X %Y $id"
     set linentag($row) [$canv2 create text 3 $y -anchor w -fill $fgcolor \
-			    -text $name -font $nfont -tags text]
+			    -text $topic -font $nfont -tags text]
     set linedtag($row) [$canv3 create text 3 $y -anchor w -fill $fgcolor \
 			    -text $date -font mainfont -tags text]
     set linedtag($row) [$canv4 create text 3 $y -anchor w -fill $fgcolor \
-			    -text $topic -font mainfont -tags text]
+			    -text $name -font mainfont -tags text]
 
     if {$selectedline == $row} {
 	make_secsel $row
