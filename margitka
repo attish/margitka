@@ -1787,6 +1787,7 @@ proc makewindow {} {
     .tf.histframe.pwclist add $canv4
     eval .tf.histframe.pwclist sash place 0 $geometry(pwsash0)
     eval .tf.histframe.pwclist sash place 1 $geometry(pwsash1)
+    eval .tf.histframe.pwclist sash place 2 $geometry(pwsash2)
 
     # a scroll bar to rule them
     scrollbar $cscroll -command {allcanvs yview} -highlightthickness 0
@@ -2314,6 +2315,7 @@ proc savestuff {w} {
 	puts $f "set geometry(topheight) [winfo height .tf]"
         puts $f "set geometry(pwsash0) \"[.tf.histframe.pwclist sash coord 0]\""
         puts $f "set geometry(pwsash1) \"[.tf.histframe.pwclist sash coord 1]\""
+        puts $f "set geometry(pwsash2) \"[.tf.histframe.pwclist sash coord 2]\""
 	puts $f "set geometry(botwidth) [winfo width .bleft]"
 	puts $f "set geometry(botheight) [winfo height .bleft]"
 
