@@ -1696,7 +1696,7 @@ proc setoptions {} {
 }
 
 proc makewindow {} {
-    global canv canv2 canv3 linespc charspc ctext cflist cscroll
+    global canv canv2 canv3 canv4 linespc charspc ctext cflist cscroll
     global tabstop
     global findtype findtypemenu findloc findstring fstring geometry
     global entries sha1entry sha1string sha1but
@@ -1752,6 +1752,7 @@ proc makewindow {} {
         set geometry(botwidth) [expr {50 * $charspc}]
         set geometry(pwsash0) "[expr {40 * $charspc}] 2"
         set geometry(pwsash1) "[expr {60 * $charspc}] 2"
+        set geometry(pwsash2) "[expr {80 * $charspc}] 2"
     }
 
     # the upper half will have a paned window, a scroll bar to the right, and some stuff below
@@ -1779,12 +1780,19 @@ proc makewindow {} {
     .tf.histframe.pwclist add $canv3
     eval .tf.histframe.pwclist sash place 0 $geometry(pwsash0)
     eval .tf.histframe.pwclist sash place 1 $geometry(pwsash1)
+    set canv4 .tf.histframe.pwclist.canv4
+    canvas $canv4 \
+	-selectbackground $selectbgcolor \
+	-background $bgcolor -bd 0 -yscrollincr $linespc
+    .tf.histframe.pwclist add $canv4
+    eval .tf.histframe.pwclist sash place 0 $geometry(pwsash0)
+    eval .tf.histframe.pwclist sash place 1 $geometry(pwsash1)
 
     # a scroll bar to rule them
     scrollbar $cscroll -command {allcanvs yview} -highlightthickness 0
     pack $cscroll -side right -fill y
     bind .tf.histframe.pwclist <Configure> {resizeclistpanes %W %w}
-    lappend bglist $canv $canv2 $canv3
+    lappend bglist $canv $canv2 $canv3 $canv4
     pack .tf.histframe.pwclist -fill both -expand 1 -side left
 
     # we have two button bars at bottom of top frame. Bar 1
@@ -2192,8 +2200,8 @@ proc selectedline_change {n1 n2 op} {
 # mouse-2 makes all windows scan vertically, but only the one
 # the cursor is in scans horizontally
 proc canvscan {op w x y} {
-    global canv canv2 canv3
-    foreach c [list $canv $canv2 $canv3] {
+    global canv canv2 canv3 canv4
+    foreach c [list $canv $canv2 $canv3 $canv4] {
 	if {$c == $w} {
 	    $c scan $op $x $y
 	} else {
@@ -2267,7 +2275,7 @@ proc doprogupdate {} {
 }
 
 proc savestuff {w} {
-    global canv canv2 canv3 mainfont textfont uifont tabstop
+    global canv canv2 canv3 canv4 mainfont textfont uifont tabstop
     global stuffsaved findmergefiles maxgraphpct
     global maxwidth showneartags showlocalchanges
     global viewname viewfiles viewargs viewargscmd viewperm nextviewnum
@@ -2375,17 +2383,19 @@ proc resizecdetpanes {win w} {
 }
 
 proc allcanvs args {
-    global canv canv2 canv3
+    global canv canv2 canv3 canv4
     eval $canv $args
     eval $canv2 $args
     eval $canv3 $args
+    eval $canv4 $args
 }
 
 proc bindall {event action} {
-    global canv canv2 canv3
+    global canv canv2 canv3 canv4
     bind $canv $event $action
     bind $canv2 $event $action
     bind $canv3 $event $action
+    bind $canv4 $event $action
 }
 
 proc about {} {
@@ -3970,13 +3980,14 @@ proc initlayout {} {
 }
 
 proc setcanvscroll {} {
-    global canv canv2 canv3 numcommits linespc canvxmax canvy0
+    global canv canv2 canv3 canv4 numcommits linespc canvxmax canvy0
     global lastscrollset lastscrollrows
 
     set ymax [expr {$canvy0 + ($numcommits - 0.5) * $linespc + 2}]
     $canv conf -scrollregion [list 0 0 $canvxmax $ymax]
     $canv2 conf -scrollregion [list 0 0 0 $ymax]
     $canv3 conf -scrollregion [list 0 0 0 $ymax]
+    $canv4 conf -scrollregion [list 0 0 0 $ymax]
     set lastscrollset [clock clicks -milliseconds]
     set lastscrollrows $numcommits
 }
@@ -4835,7 +4846,7 @@ proc drawlines {id} {
 }
 
 proc drawcmittext {id row col} {
-    global linespc canv canv2 canv3 fgcolor curview
+    global linespc canv canv2 canv3 canv4 fgcolor curview
     global cmitlisted commitinfo rowidlist parentlist
     global rowtextx idpos idtags idheads idotherrefs
     global linehtag linentag linedtag selectedline
@@ -4918,6 +4929,9 @@ proc drawcmittext {id row col} {
 			    -text $name -font $nfont -tags text]
     set linedtag($row) [$canv3 create text 3 $y -anchor w -fill $fgcolor \
 			    -text $date -font mainfont -tags text]
+    set linedtag($row) [$canv4 create text 3 $y -anchor w -fill $fgcolor \
+			    -text "margitka" -font mainfont -tags text]
+
     if {$selectedline == $row} {
 	make_secsel $row
     }
@@ -5833,7 +5847,7 @@ proc dispnexttag {} {
 }
 
 proc make_secsel {l} {
-    global linehtag linentag linedtag canv canv2 canv3
+    global linehtag linentag linedtag canv canv2 canv3 canv4
 
     if {![info exists linehtag($l)]} return
     $canv delete secsel
@@ -5848,6 +5862,11 @@ proc make_secsel {l} {
     set t [eval $canv3 create rect [$canv3 bbox $linedtag($l)] -outline {{}} \
 	       -tags secsel -fill [$canv3 cget -selectbackground]]
     $canv3 lower $t
+    # UMS: try disabling this...
+    $canv4 delete secsel
+    set t [eval $canv4 create rect [$canv4 bbox $linedtag($l)] -outline {{}} \
+	       -tags secsel -fill [$canv4 cget -selectbackground]]
+    $canv4 lower $t
 }
 
 proc selectline {l isnew} {
