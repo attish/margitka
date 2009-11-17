@@ -1736,7 +1736,7 @@ proc makewindow {} {
 
     menu .bar.help
     .bar add cascade -label [mc "Help"] -menu .bar.help
-    .bar.help add command -label [mc "About gitk"] -command about
+    .bar.help add command -label [mc "About margitka"] -command about
     .bar.help add command -label [mc "Key bindings"] -command keys
     .bar.help configure
     . configure -menu .bar
@@ -2408,11 +2408,18 @@ proc about {} {
 	return
     }
     toplevel $w
-    wm title $w [mc "About gitk"]
+    wm title $w [mc "About margitka"]
     message $w.m -text [mc "
-Gitk - a commit viewer for git
+margitka - enhanced gitk with topic display
 
-Copyright © 2005-2008 Paul Mackerras
+Copyright © 2009 Attila Nagy
+
+Send comments and questions to
+nagy.attila.1984\x40gmail\056com
+
+gitk Copyright © 2005-2008 Paul Mackerras
+
+Many thanks to Paul for this awesome tool!
 
 Use and redistribute under the terms of the GNU General Public License"] \
 	    -justify center -aspect 400 -border 2 -bg white -relief groove
