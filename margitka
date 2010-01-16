@@ -2287,7 +2287,7 @@ proc savestuff {w} {
     if {$stuffsaved} return
     if {![winfo viewable .]} return
     catch {
-	set f [open "~/.gitk-new" w]
+	set f [open "~/.margitka-new" w]
 	puts $f [list set mainfont $mainfont]
 	puts $f [list set textfont $textfont]
 	puts $f [list set uifont $uifont]
@@ -2327,7 +2327,7 @@ proc savestuff {w} {
 	}
 	puts $f "}"
 	close $f
-	file rename -force "~/.gitk-new" "~/.gitk"
+	file rename -force "~/.margitka-new" "~/.margitka"
     }
     set stuffsaved 1
 }
@@ -2952,7 +2952,7 @@ proc external_diff {} {
     # make sure that several diffs wont collide
     if {![info exists gitktmpdir]} {
 	set gitktmpdir [file join [file dirname $gitdir] \
-			    [format ".gitk-tmp.%s" [pid]]]
+			    [format ".margitka-tmp.%s" [pid]]]
 	if {[catch {file mkdir $gitktmpdir} err]} {
 	    error_popup "Error creating temporary directory $gitktmpdir: $err"
 	    unset gitktmpdir
@@ -8036,7 +8036,7 @@ proc getallclines {fd} {
     global allparents allchildren idtags idheads nextarc
     global arcnos arcids arctags arcout arcend arcstart archeads growing
     global seeds allcommits cachedarcs allcupdate
-    
+
     set nid 0
     while {[incr nid] <= 1000 && [gets $fd line] >= 0} {
 	set id [lindex $line 0]
@@ -9833,7 +9833,7 @@ namespace import ::msgcat::mc
 ## And eventually load the actual message catalog
 ::msgcat::mcload $gitk_msgsdir
 
-catch {source ~/.gitk}
+catch {source ~/.margitka}
 
 font create optionfont -family sans-serif -size -12
 
